@@ -18,19 +18,18 @@ func (rl *Instance) insertCandidateVirtual(candidate []rune) {
 		break
 	}
 
-	// We place the cursor back at the beginning of the previous virtual candidate
-	rl.pos -= len(rl.currentComp)
+	// Delete the current completion (size of rl.currentComp)
+	rl.line = rl.line[:len(rl.line)-len(rl.currentComp)]
 
-	// We delete the previous virtual completion, just
-	// like we would delete a word in vim editing mode.
-	if len(rl.currentComp) == 1 {
-		rl.deleteVirtual() // Delete a single character
-	} else if len(rl.currentComp) > 0 {
-		rl.viDeleteByAdjustVirtual(rl.viJumpEVirtual(tokeniseSplitSpaces) + 1)
-	}
+	// @TODO
+	Prefix := len(rl.tcPrefix) - len(rl.currentComp)
 
 	// We then keep a reference to the new candidate
 	rl.currentComp = candidate
+
+
+	// Now lets go back rl.tcPrefix and delete lines up until that
+	// rl.line = append(rl.line[:rl.pos-len(rl.tcPrefix)], rl.line[rl.pos:]...)
 
 	// We should not have a remaining virtual completion
 	// line, so it is now identical to the real line.
@@ -46,11 +45,11 @@ func (rl *Instance) insertCandidateVirtual(candidate []rune) {
 		r := append(candidate, rl.lineComp[rl.pos:]...)
 		rl.lineComp = append(rl.lineComp[:rl.pos], r...)
 	default:
-		rl.lineComp = append(rl.lineComp, candidate...)
+		rl.lineComp = append(rl.lineComp[:len(rl.lineComp)-Prefix], candidate...)
 	}
 
 	// We place the cursor at the end of our new virtually completed item
-	rl.pos += len(candidate)
+	rl.pos += len(rl.currentComp)-len(rl.tcPrefix)
 }
 
 // Insert the current completion candidate into the input line.
@@ -67,13 +66,15 @@ func (rl *Instance) insertCandidate() {
 		// Special case for the only special escape, which
 		// if not handled, will make us insert the first
 		// character of our actual rl.tcPrefix in the candidate.
-		if strings.HasPrefix(string(rl.tcPrefix), "%") {
-			prefix++
-		}
+		//// if strings.HasPrefix(string(rl.tcPrefix), "%") {
+		//// 	prefix++
+		//// }
 
 		// Ensure no indexing error happens with prefix
-		if len(completion) >= prefix {
-			rl.insert([]rune(completion[prefix:]))
+		if len(rl.line) != prefix {
+			rl.line = append(rl.line[:len(rl.line)-prefix], []rune(completion)...)
+			rl.pos += len(completion)-prefix
+			// rl.insert([]rune(completion[prefix:]))
 			if !cur.TrimSlash && !cur.NoSpace {
 				rl.insert([]rune(" "))
 			}
@@ -102,13 +103,13 @@ func (rl *Instance) updateVirtualComp() {
 			// Special case for the only special escape, which
 			// if not handled, will make us insert the first
 			// character of our actual rl.tcPrefix in the candidate.
-			if strings.HasPrefix(string(rl.tcPrefix), "%") {
-				prefix++
-			}
+			//if strings.HasPrefix(string(rl.tcPrefix), "%") {
+			//	prefix++
+			//}
 
 			// Or insert it virtually.
 			if len(completion) >= prefix {
-				rl.insertCandidateVirtual([]rune(completion[prefix:]))
+				rl.insertCandidateVirtual([]rune(completion))
 			}
 		}
 	}
@@ -139,17 +140,17 @@ func (rl *Instance) resetVirtualComp(drop bool) {
 	}
 
 	// We will only insert the net difference between prefix and completion.
-	prefix := len(rl.tcPrefix)
+	//prefix := len(rl.tcPrefix)
 	// Special case for the only special escape, which
 	// if not handled, will make us insert the first
 	// character of our actual rl.tcPrefix in the candidate.
-	if strings.HasPrefix(string(rl.tcPrefix), "%") {
-		prefix++
-	}
+	//if strings.HasPrefix(string(rl.tcPrefix), "%") {
+	//	prefix++
+	//}
 
 	// If we are asked to drop the completion, move it away from the line and return.
 	if drop {
-		rl.pos -= len([]rune(completion[prefix:]))
+		rl.pos -= len([]rune(completion))
 		rl.lineComp = rl.line
 		rl.clearVirtualComp()
 		return
@@ -165,14 +166,14 @@ func (rl *Instance) resetVirtualComp(drop bool) {
 				trimmed = trimmed + " "
 			}
 		}
-		rl.insertCandidateVirtual([]rune(trimmed[prefix:]))
+		rl.insertCandidateVirtual([]rune(trimmed))
 	} else {
 		if rl.compAddSpace {
 			if !cur.NoSpace {
 				completion = completion + " "
 			}
 		}
-		rl.insertCandidateVirtual([]rune(completion[prefix:]))
+		rl.insertCandidateVirtual([]rune(completion))
 	}
 
 	// Reset virtual

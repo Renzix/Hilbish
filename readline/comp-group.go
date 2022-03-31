@@ -25,6 +25,9 @@ type CompletionGroup struct {
 	// Can be used for multi-stage completions, like URLS (scheme:// + host)
 	NoSpace bool
 
+	// Case Sensitive searching
+	CaseSensitive bool
+
 	// For each group, we can define the min and max tab item length
 	MinTabItemLength int
 	MaxTabItemLength int

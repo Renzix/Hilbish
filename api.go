@@ -135,7 +135,7 @@ func luaFileComplete(L *lua.LState) int {
 		fds = append(fds, v.String())
 	})
 
-	completions := fileComplete(query, ctx, fds)
+	completions, _ := fileComplete(query, ctx, fds)
 	luaComps := L.NewTable()
 
 	for _, comp := range completions {

@@ -203,6 +203,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 									Suggestions: items,
 									TrimSlash: false,
 									NoSpace: true,
+									CaseSensitive: true,
 								})
 							}
 						}
@@ -211,12 +212,14 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			}
 
 			if len(compGroup) == 0 {
-				completions = fileComplete(query, ctx, fields)
+				var prefix string
+				completions, prefix = fileComplete(query, ctx, fields)
 				compGroup = append(compGroup, &readline.CompletionGroup{
 					TrimSlash: false,
 					NoSpace: true,
 					Suggestions: completions,
 				})
+				return prefix, compGroup
 			}
 		}
 		return "", compGroup

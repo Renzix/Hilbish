@@ -8,21 +8,22 @@ import (
 	"unicode"
 )
 
-func fileComplete(query, ctx string, fields []string) []string {
+func fileComplete(query, ctx string, fields []string) ([]string, string) {
 	var completions []string
+	var extra string
 
 	prefixes := []string{"./", "../", "/", "~/"}
 	for _, prefix := range prefixes {
 		if strings.HasPrefix(query, prefix) {
-			completions, _ = matchPath(strings.Replace(query, "~", curuser.HomeDir, 1), query)
+			completions, extra, _ = matchPath(strings.Replace(query, "~", curuser.HomeDir, 1), query)
 		}
 	}
 
 	if len(completions) == 0 && len(fields) > 1 {
-		completions, _ = matchPath("./" + query, query)
+		completions, extra, _ = matchPath("./" + query, query)
 	}
 
-	return completions
+	return completions, extra
 }
 
 func binaryComplete(query, ctx string, fields []string) ([]string, string) {
@@ -31,7 +32,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	prefixes := []string{"./", "../", "/", "~/"}
 	for _, prefix := range prefixes {
 		if strings.HasPrefix(query, prefix) {
-			fileCompletions := fileComplete(query, ctx, fields)
+			fileCompletions, prefix := fileComplete(query, ctx, fields)
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
 					name := strings.Replace(query + f, "~", curuser.HomeDir, 1)
@@ -41,7 +42,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 					completions = append(completions, f)
 				}
 			}
-			return completions, ""
+			return completions, prefix
 		}
 	}
 
@@ -77,7 +78,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	return completions, query
 }
 
-func matchPath(path, pref string) ([]string, error) {
+func matchPath(path, pref string) ([]string, string, error) {
 	var entries []string
 	matches, err := filepath.Glob(desensitize(path) + "*")
 	if err == nil {
@@ -95,11 +96,6 @@ func matchPath(path, pref string) ([]string, error) {
 		r := strings.NewReplacer(args...)
 		for _, match := range matches {
 			name := filepath.Base(match)
-			p := filepath.Base(pref)
-			if pref == "" || pref == "./" {
-				p = ""
-			}
-			name = strings.TrimPrefix(name, p)
 			matchFull, _ := filepath.Abs(match)
 			if info, err := os.Stat(matchFull); err == nil && info.IsDir() {
 				name = name + string(os.PathSeparator)
@@ -109,7 +105,7 @@ func matchPath(path, pref string) ([]string, error) {
 		}
 	}
 
-	return entries, err
+	return entries, filepath.Base(pref), err
 }
 
 func desensitize(text string) string {
