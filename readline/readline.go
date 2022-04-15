@@ -836,6 +836,76 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.saveToRegister(-rl.emacsBackwardWord(tokeniseLine))
 		rl.viDeleteByAdjust(-rl.emacsBackwardWord(tokeniseLine))
 		rl.updateHelpers()
+	// Arguments ------------------------------------------------------------------------------
+	case seqAlt0:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 0
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
+
+	case seqAlt1:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 1
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
+
+	case seqAlt2:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 2
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
+
+	case seqAlt3:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 3
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
+
+	case seqAlt4:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 4
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
+
+	case seqAlt5:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 5
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
+
+	case seqAlt6:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 6
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
+
+	case seqAlt7:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 7
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
+
+	case seqAlt8:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 8
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
+
+	case seqAlt9:
+		if rl.modeTabCompletion {
+			return
+		}
+		rl.count = 9
+		rl.SetInfoText(fmt.Sprintf("(arg %d)", rl.count))
 
 	default:
 		if rl.modeTabFind {

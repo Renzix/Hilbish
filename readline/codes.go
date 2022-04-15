@@ -57,6 +57,16 @@ var (
 	seqAltD         = string([]byte{27, 100})
 	seqAltF         = string([]byte{27, 102})
 	seqAltR         = string([]byte{27, 114}) // Used for alternative history
+	seqAlt0         = string([]byte{27, 48})
+	seqAlt1         = string([]byte{27, 49})
+	seqAlt2         = string([]byte{27, 50})
+	seqAlt3         = string([]byte{27, 51})
+	seqAlt4         = string([]byte{27, 52})
+	seqAlt5         = string([]byte{27, 53})
+	seqAlt6         = string([]byte{27, 54})
+	seqAlt7         = string([]byte{27, 55})
+	seqAlt8         = string([]byte{27, 56})
+	seqAlt9         = string([]byte{27, 57})
 	seqAltBackspace = string([]byte{27, 127})
 )
 

@@ -173,6 +173,7 @@ type Instance struct {
 	viUndoSkipAppend bool
 	viIsYanking      bool
 	registers        *registers // All memory text registers, can be consulted with Alt"
+	count            int
 
 	//
 	// Other -------------------------------------------------------------------------------------
@@ -225,6 +226,7 @@ func NewInstance() *Instance {
 	rl.HintFormatting = "\x1b[2m"
 	rl.evtKeyPress = make(map[string]func(string, []rune, int) *EventReturn)
 	rl.TempDirectory = os.TempDir()
+	rl.count = 1
 
 	// Registers
 	rl.initRegisters()
