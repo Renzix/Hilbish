@@ -178,9 +178,13 @@ func (rl *Instance) Readline() (string, error) {
 			if rl.modeTabFind {
 				rl.backspaceTabFind()
 			} else {
-				if (rl.pos < len(rl.line)) {
-					rl.deleteBackspace(true)
+				for rl.count!=0 {
+					if (rl.pos < len(rl.line)) {
+						rl.deleteBackspace(true)
+					}
+					rl.count--
 				}
+				rl.ResetCount()
 			}
 
 		// Clear screen
@@ -251,7 +255,12 @@ func (rl *Instance) Readline() (string, error) {
 				}
 
 				// Else emacs deletes a character
-				rl.backspace(false)
+				for rl.count!=0 {
+					rl.backspace(false)
+					rl.count--
+				}
+				rl.ResetCount()
+
 				rl.renderHelpers()
 			}
 
