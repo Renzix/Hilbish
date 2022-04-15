@@ -780,8 +780,14 @@ func (rl *Instance) escapeSeq(r []rune) {
 			return
 		}
 
-		move := rl.emacsBackwardWord(tokeniseLine)
-		rl.moveCursorByAdjust(-move)
+		var move int
+		for rl.count!= 0 {
+			move = rl.emacsBackwardWord(tokeniseLine)
+			rl.moveCursorByAdjust(-move)
+			rl.count--
+		}
+		rl.ResetCount()
+
 		rl.updateHelpers()
 
 	case seqAltF:
@@ -794,8 +800,14 @@ func (rl *Instance) escapeSeq(r []rune) {
 			return
 		}
 
-		move := rl.emacsForwardWord(tokeniseLine)
-		rl.moveCursorByAdjust(move)
+		var move int
+		for rl.count!= 0 {
+			move = rl.emacsForwardWord(tokeniseLine)
+			rl.moveCursorByAdjust(move)
+			rl.count--
+		}
+		rl.ResetCount()
+
 		rl.updateHelpers()
 
 	case seqAltR:
